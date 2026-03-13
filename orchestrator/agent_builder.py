@@ -386,12 +386,18 @@ class AgentBuilder:
             with open(compose_path, "w") as f:
                 yaml.dump(compose_data, f)
             
-            # Deploy agent
-            result = run_cmd([
+            # Deploy agent — use --env-file so docker compose loads the agent's .env
+            # regardless of the process working directory (which is the nasiko root, not the agent dir)
+            compose_cmd = [
                 "docker", "compose",
                 "-f", str(compose_path),
-                "up", "-d"
-            ], check=False)  # Don't raise exception on failure
+            ]
+            env_file = agent_temp_path / ".env"
+            if env_file.exists():
+                compose_cmd.extend(["--env-file", str(env_file)])
+                logger.info(f"Loading agent env file: {env_file}")
+            compose_cmd.extend(["up", "-d"])
+            result = run_cmd(compose_cmd, check=False)  # Don't raise exception on failure
             
             if result.returncode == 0:
                 logger.info(f"Successfully deployed agent: {agent_folder_name}")

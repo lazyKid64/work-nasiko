@@ -396,7 +396,7 @@ class RedisStreamListener:
             
             # Step 4: Deploy agent container  
             await self._update_status(agent_name, 'deploying', 'Deploying agent container', owner_id, upload_id, base_url, 50)
-            deployment_result = await self._deploy_agent_container(agent_name, image_tag, owner_id, upload_type)
+            deployment_result = await self._deploy_agent_container(agent_name, image_tag, owner_id, upload_type, agent_source_path=agent_source_path)
             
             # Step 5: Update agent registry via backend API
             await self._update_status(agent_name, 'registering', 'Updating agent registry', owner_id, upload_id, base_url, 90)
@@ -570,7 +570,7 @@ class RedisStreamListener:
             self.logger.error(f"Error during observability injection for {agent_name}: {e}")
             # Don't raise - continue with original files if injection fails
 
-    async def _deploy_agent_container(self, agent_name: str, image_tag: str, owner_id: str, upload_type: Optional[str] = None, webhook_url: Optional[str] = None) -> dict:
+    async def _deploy_agent_container(self, agent_name: str, image_tag: str, owner_id: str, upload_type: Optional[str] = None, webhook_url: Optional[str] = None, agent_source_path: Optional[Path] = None) -> dict:
         """Deploy agent container with proper networking"""
         import socket
         
@@ -585,6 +585,18 @@ class RedisStreamListener:
             'OWNER_ID': owner_id or '',
             'OPENAI_API_KEY': Config.OPENAI_API_KEY
         }
+
+        # Load agent-specific env vars from its .env file if present
+        if agent_source_path:
+            env_file = Path(agent_source_path) / '.env'
+            if env_file.exists():
+                self.logger.info(f"Loading agent env file: {env_file}")
+                with open(env_file) as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#') and '=' in line:
+                            key, _, value = line.partition('=')
+                            env_vars[key.strip()] = value.strip()
         
         # Add observability environment variables
         obs_env_vars = await self.get_observability_env_vars(agent_name)
