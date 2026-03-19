@@ -129,12 +129,8 @@ def _get_instrumentors_for_framework(framework: Optional[str]) -> list:
             ("openinference.instrumentation.pydantic_ai", "PydanticAIInstrumentor"),
             ("openinference.instrumentation.openai", "OpenAIInstrumentor"),
         ],
-        'minimax': [
-            ('openinference.instrumentation.openai', 'OpenAIInstrumentor')
-        ],
-        'custom': [
-            ('openinference.instrumentation.openai', 'OpenAIInstrumentor')
-        ]
+        "minimax": [("openinference.instrumentation.openai", "OpenAIInstrumentor")],
+        "custom": [("openinference.instrumentation.openai", "OpenAIInstrumentor")],
     }
 
     # Get instrumentors for the framework

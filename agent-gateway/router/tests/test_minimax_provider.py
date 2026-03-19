@@ -16,6 +16,7 @@ class TestRouterConfigMiniMax:
         """Default ROUTER_LLM_PROVIDER should be 'openai'."""
         with patch.dict(os.environ, {}, clear=True):
             from router.src.config.settings import RouterConfig
+
             config = RouterConfig(
                 _env_file=None,
                 ROUTER_LLM_PROVIDER="openai",
@@ -32,6 +33,7 @@ class TestRouterConfigMiniMax:
             "ROUTER_LLM_MODEL": "MiniMax-M2.7",
         }
         from router.src.config.settings import RouterConfig
+
         config = RouterConfig(_env_file=None, **config_data)
         assert config.MINIMAX_API_KEY == "test-minimax-key"
         assert config.MINIMAX_BASE_URL == "https://api.minimax.io/v1"
@@ -40,12 +42,14 @@ class TestRouterConfigMiniMax:
     def test_minimax_default_base_url(self):
         """Default MiniMax base URL should be the global endpoint."""
         from router.src.config.settings import RouterConfig
+
         config = RouterConfig(_env_file=None)
         assert config.MINIMAX_BASE_URL == "https://api.minimax.io/v1"
 
     def test_minimax_custom_base_url(self):
         """MiniMax base URL should be overridable for China endpoint."""
         from router.src.config.settings import RouterConfig
+
         config = RouterConfig(
             _env_file=None,
             MINIMAX_BASE_URL="https://api.minimaxi.com/v1",
@@ -160,17 +164,32 @@ class TestMiniMaxModels:
 
     def test_highspeed_model_available(self):
         """MiniMax-M2.7-highspeed should be a valid model option."""
-        valid_models = ["MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2.5-highspeed"]
+        valid_models = [
+            "MiniMax-M2.7",
+            "MiniMax-M2.7-highspeed",
+            "MiniMax-M2.5",
+            "MiniMax-M2.5-highspeed",
+        ]
         assert "MiniMax-M2.7-highspeed" in valid_models
 
     def test_m27_models_before_m25(self):
         """M2.7 models should appear before M2.5 models in the list."""
-        valid_models = ["MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2.5-highspeed"]
+        valid_models = [
+            "MiniMax-M2.7",
+            "MiniMax-M2.7-highspeed",
+            "MiniMax-M2.5",
+            "MiniMax-M2.5-highspeed",
+        ]
         assert valid_models.index("MiniMax-M2.7") < valid_models.index("MiniMax-M2.5")
 
     def test_legacy_models_still_available(self):
         """Previous M2.5 models should still be available."""
-        valid_models = ["MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2.5-highspeed"]
+        valid_models = [
+            "MiniMax-M2.7",
+            "MiniMax-M2.7-highspeed",
+            "MiniMax-M2.5",
+            "MiniMax-M2.5-highspeed",
+        ]
         assert "MiniMax-M2.5" in valid_models
         assert "MiniMax-M2.5-highspeed" in valid_models
 
@@ -198,9 +217,7 @@ class TestTracingInstrumentation:
     def test_minimax_uses_openai_instrumentor(self):
         """MiniMax framework should map to OpenAI instrumentor."""
         framework_instrumentors = {
-            "minimax": [
-                ("openinference.instrumentation.openai", "OpenAIInstrumentor")
-            ],
+            "minimax": [("openinference.instrumentation.openai", "OpenAIInstrumentor")],
         }
         assert "minimax" in framework_instrumentors
         instrumentor = framework_instrumentors["minimax"][0]

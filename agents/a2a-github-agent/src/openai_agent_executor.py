@@ -30,7 +30,7 @@ class OpenAIAgentExecutor(AgentExecutor):
         api_key: str,
         system_prompt: str,
         base_url: str | None = None,
-        model: str = 'gpt-4o',
+        model: str = "gpt-4o",
     ):
         self._card = card
         self.tools = tools

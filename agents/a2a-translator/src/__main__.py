@@ -29,17 +29,17 @@ logging.basicConfig()
 @click.option("--port", "port", default=5000)
 def main(host: str, port: int):
     # Determine which LLM provider to use
-    api_key = os.getenv('OPENAI_API_KEY') or os.getenv('MINIMAX_API_KEY')
+    api_key = os.getenv("OPENAI_API_KEY") or os.getenv("MINIMAX_API_KEY")
     base_url = None
-    model = 'gpt-4o'
+    model = "gpt-4o"
 
-    if os.getenv('MINIMAX_API_KEY') and not os.getenv('OPENAI_API_KEY'):
-        base_url = os.getenv('MINIMAX_BASE_URL', 'https://api.minimax.io/v1')
-        model = os.getenv('MINIMAX_MODEL', 'MiniMax-M2.7')
+    if os.getenv("MINIMAX_API_KEY") and not os.getenv("OPENAI_API_KEY"):
+        base_url = os.getenv("MINIMAX_BASE_URL", "https://api.minimax.io/v1")
+        model = os.getenv("MINIMAX_MODEL", "MiniMax-M2.7")
 
     if not api_key:
         raise ValueError(
-            'Either OPENAI_API_KEY or MINIMAX_API_KEY environment variable must be set'
+            "Either OPENAI_API_KEY or MINIMAX_API_KEY environment variable must be set"
         )
 
     skill = AgentSkill(
@@ -72,9 +72,9 @@ def main(host: str, port: int):
 
     agent_executor = OpenAIAgentExecutor(
         card=agent_card,
-        tools=agent_data['tools'],
+        tools=agent_data["tools"],
         api_key=api_key,
-        system_prompt=agent_data['system_prompt'],
+        system_prompt=agent_data["system_prompt"],
         base_url=base_url,
         model=model,
     )

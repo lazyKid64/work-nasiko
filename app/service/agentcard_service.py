@@ -20,7 +20,11 @@ class AgentCardService:
 
     def __init__(self, logger, openai_api_key: Optional[str] = None):
         self.logger = logger
-        self.openai_api_key = openai_api_key or os.getenv("OPENAI_API_KEY") or os.getenv("MINIMAX_API_KEY")
+        self.openai_api_key = (
+            openai_api_key
+            or os.getenv("OPENAI_API_KEY")
+            or os.getenv("MINIMAX_API_KEY")
+        )
 
     async def generate_and_save_agentcard(
         self,
