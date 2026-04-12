@@ -71,6 +71,7 @@ class RoutingEngine:
             if not settings.JINA_API_KEY:
                 raise RoutingEngineError("JINA_API_KEY is required for Jina embeddings")
             from langchain_community.embeddings import JinaEmbeddings
+
             return JinaEmbeddings(
                 jina_api_key=settings.JINA_API_KEY,
                 model_name=settings.JINA_EMBEDDING_MODEL,
