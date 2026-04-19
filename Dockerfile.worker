@@ -35,8 +35,9 @@ RUN mkdir -p /app/app/utils && \
     touch /app/app/__init__.py && \
     touch /app/app/utils/__init__.py
 
-# Install Python dependencies including observability components
-RUN pip install --no-cache-dir -r /app/orchestrator/requirements.txt
+# Install langtrace without its strict boto3==1.38.0 pin, then rest normally
+RUN pip install --no-cache-dir langtrace-python-sdk>=3.8.21 --no-deps && \
+    pip install --no-cache-dir -r /app/orchestrator/requirements.txt
 
 # Create non-root user for security (kept for potential future use)
 RUN useradd -m -u 1000 worker && chown -R worker:worker /app
