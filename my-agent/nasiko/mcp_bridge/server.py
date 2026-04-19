@@ -22,13 +22,25 @@ from pydantic import BaseModel
 from nasiko.mcp_bridge.kong import KongRegistrar
 from nasiko.mcp_bridge.models import BridgeConfig
 
-from nasiko.app.utils.observability.mcp_tracing import (
-    bootstrap_mcp_tracing,
-    instrument_mcp_bridge,
-    create_tool_call_span,
-    record_tool_result,
-    record_tool_error,
-)
+try:
+    # Prefer the local module: uses standard OTel SDK → Phoenix OTLP HTTP (port 4318).
+    # No arize-phoenix pip dependency needed, no numpy build failures.
+    from nasiko.app.utils.observability.mcp_tracing_local import (
+        bootstrap_mcp_tracing,
+        instrument_mcp_bridge,
+        create_tool_call_span,
+        record_tool_result,
+        record_tool_error,
+    )
+except ImportError:
+    # Fallback: original module (uses phoenix.otel.register)
+    from nasiko.app.utils.observability.mcp_tracing import (
+        bootstrap_mcp_tracing,
+        instrument_mcp_bridge,
+        create_tool_call_span,
+        record_tool_result,
+        record_tool_error,
+    )
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

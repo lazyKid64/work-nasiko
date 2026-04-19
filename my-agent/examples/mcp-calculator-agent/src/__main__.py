@@ -79,13 +79,14 @@ async def handle_jsonrpc(request: Request) -> JSONResponse:
             }
         })
 
-    elif method == "tasks/send":
+    elif method in ("message/send", "tasks/send"):
         # Extract the user's message
         message = params.get("message", {})
         parts = message.get("parts", [])
         user_text = ""
         for part in parts:
-            if part.get("type") == "text" or "text" in part:
+            # Platform uses "kind": "text", some clients use "type": "text"
+            if part.get("kind") == "text" or part.get("type") == "text" or "text" in part:
                 user_text = part.get("text", str(part))
                 break
 
@@ -96,21 +97,15 @@ async def handle_jsonrpc(request: Request) -> JSONResponse:
         answer = evaluate_math(user_text)
         logger.info(f"Query: {user_text} -> Answer: {answer}")
 
-        task_id = params.get("id", "task-1")
-
+        import uuid as _uuid
         return JSONResponse({
             "jsonrpc": "2.0",
             "id": req_id,
             "result": {
-                "id": task_id,
-                "status": {"state": "completed"},
-                "artifacts": [{
-                    "parts": [{"type": "text", "text": answer}]
-                }],
-                "history": [
-                    {"role": "user", "parts": [{"type": "text", "text": user_text}]},
-                    {"role": "agent", "parts": [{"type": "text", "text": answer}]}
-                ]
+                "kind": "message",
+                "role": "agent",
+                "messageId": str(_uuid.uuid4()),
+                "parts": [{"kind": "text", "text": answer}],
             }
         })
 
